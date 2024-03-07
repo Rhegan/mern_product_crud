@@ -15,7 +15,12 @@ const getProduct = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({error: "Product not found"})
     }
+    
     const product = await Product.findById({_id: id})
+
+    if (!product) {
+        return res.status(404).json({error: "Product not found"})
+    }
 
     res.status(200).json({product})
 }
@@ -45,12 +50,38 @@ const createProduct = async (req, res) => {
 
 // delete a product
 const deleteProduct = async (req, res) => {
-    res.json({"message":"Delete a product"})
+    const id = req.params.id
+
+    if (!mongoose.Types.ObjectId.isValid(id) || !Product) {
+        return res.status(404).json({error: "Product not found"})
+    }
+
+    const product = await Product.findByIdAndDelete({_id: id})
+
+    if (!product) {
+        return res.status(404).json({error: "Product not found"})
+    }
+
+    res.status(200).json({"message":"Product deleted successfully"})
 }
 
 // update a product
 const updateProduct = async (req, res) => {
-    res.json({"message":"Update a product"})
+    const id = req.params.id
+
+    if (!mongoose.Types.ObjectId.isValid(id) || !Product) {
+        return res.status(404).json({error: "Product not found"})
+    }
+
+    const product = await Product.findByIdAndUpdate({_id: id}, { 
+        ...req.body
+    })
+
+    if (!product) {
+        return res.status(404).json({error: "Product not found"})
+    }
+
+    res.status(200).json({"message":"Product updated successfully"})
 }
 
 module.exports = {
